@@ -33,6 +33,13 @@
 
 - Pour éviter de se faire voler le cookie utilisateur par un tier mettre le cookie en secure, strict, httponly
 
+# Upload
+
+- Vérification de taille de fichier
+- Vérification d'extension
+- Ne pas avoir de nom prédictible
+- Bloquer ce dossier sur l'hébergeur
+
 # Protection Header
 
 - Pas de fuite de nom de serveur Express
@@ -61,12 +68,19 @@ openssl rand -base64 32
 - bcrypt pour hash de mot de passe 
 - express-validator pour sécuriser les entrées envoyées
 - nodemon pour recharger le serveur à chaque modification de fichier
-- csrf-csrf pour la gestion de token csrf
+- csrf-sync pour la gestion de token csrf
 - express-session pour la gestion de session
 - cookie-parser pour la gestion de cookie
+- axios pour gérer les requêtes
+- express-rate-limit pour limiter les requêtes
 
 # Hébergement
 
 - Sécuriser le firewall mettre des règles spécifique pour accepter les ip seulement sur le port 443 
 - Mettre en place la redirection https éviter les attaques de type mitm
 - N'accepter que les connexion http 2 ou 3 pour éviter le smuggling
+
+# Note
+
+Passage en https grosse perte de temps sur les csrf à cause des cookies j'ai passé des heures à debugger le problème venait de la session qui n'est pas store.
+Pareil pour le rate limiting il faut un stockage pour l'ip et le nombre de tentative

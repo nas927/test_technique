@@ -42,6 +42,7 @@ CREATE POLICY invoices_all ON invoices
 
 INSERT INTO tenants (name) VALUES ('Tenant Alpha'), ('Tenant Beta');
 
+-- Vous devez avoir un utilisateur "postgres"
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO postgres;
 
 INSERT INTO users (email, password_hash, role_id, tenant_id, ip_address, created_at) VALUES

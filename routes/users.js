@@ -8,12 +8,12 @@ const router = express.Router();
 router.get('/:id', auth, async (req, res) => {
   const { id } = req.params;
 
-  const result = await fetchUser(id);
+  const result = await fetchUser("id", id);
 
-  if (result.rows.length === 0)
+  if (result === null)
     return res.status(404).json({ error: 'User not found' });
 
-  res.json(result.rows[0]);
+  res.json({user: result.id});
 });
 
 module.exports = router;

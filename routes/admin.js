@@ -1,12 +1,19 @@
 const express = require('express');
+const auth = require('../middleware/auth')
+const { isAdmin } = require("../utils/db_utils")
 const pool = require('../db');
 
 const router = express.Router();
 
-router.get('/stats', async (req, res) => {
+router.get('/stats', auth, async (req, res) => {
+  if (!(await isAdmin("id", req.user.id, req.user.role)))
+  {
+    res.status(500).json({ error: "Non admin !" })
+    return;
+  }
   const query = {
   // give the query a unique name
-    name: 'fetch-invoices',
+    name: 'fetch-for-admins',
     text: 'SELECT * FROM invoices',
   }
   const result = await pool.query(query);
