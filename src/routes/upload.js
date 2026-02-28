@@ -4,6 +4,7 @@ const path = require('path');
 const { hashPassword } = require('../utils/secure_pass')
 const fs = require('fs');
 const auth = require('../middleware/auth');
+const { fileTypeFromFile } = require('file-type');
 const dotenv = require('dotenv');
 
 const router = express.Router();
@@ -25,7 +26,7 @@ const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
 
   if (!ALLOWED_MIME_TYPES.includes(file.mimetype))
-    return cb(new Error('type de fuchier invalide'), false);
+    return cb(new Error('type de fichier invalide'), false);
   if (!ALLOWED_EXTENSIONS.includes(ext))
     return cb(new Error('type de fuchier invalide'), false);
   cb(null, true);
@@ -54,7 +55,14 @@ const upload = multer({
   }
 });
 
-router.post('/img', auth, upload.single('file'), (req, res) => {
+router.post('/img', auth, upload.single('file'), async (req, res) => {
+  const type = await fileTypeFromFile(req.file.path);
+
+  if (!type)
+  {
+    fs.unlinkSync(req.file.path);
+    return res.status(400).json({ error: 'Fichier pas valid !' });
+  }
   if (!req.file)
     return res.status(400).json({ error: 'Fichier pas valid uploadé' });
 

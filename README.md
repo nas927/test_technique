@@ -55,6 +55,7 @@
 - Vérification de taille de fichier
 - Vérification d'extension
 - Ne pas avoir de nom prédictible
+- Vérification magic byte
 
 Testes (bash ou batch pas de powershell):
 ```sh
@@ -83,6 +84,7 @@ openssl rand -base64 32
 - cookie-parser pour la gestion de cookie
 - axios pour gérer les requêtes
 - express-rate-limit pour limiter les requêtes
+- file-type pour magic byte
 
 # Hébergement
 
