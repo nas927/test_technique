@@ -32,13 +32,13 @@ ALTER TABLE invoices FORCE ROW LEVEL SECURITY;
 
 CREATE POLICY utilisateur_all ON users
     FOR ALL
-    USING (id = current_setting('app.current_user_id')::INT)
-    WITH CHECK (id = current_setting('app.current_user_id')::INT);
+    USING (id = current_setting('app.current_user_id')::BIGINT)
+    WITH CHECK (id = current_setting('app.current_user_id')::BIGINT);
 
 CREATE POLICY invoices_all ON invoices
     FOR ALL
-    USING (user_id = current_setting('app.current_user_id')::INT)
-    WITH CHECK (user_id = current_setting('app.current_user_id')::INT);
+    USING (user_id = current_setting('app.current_user_id')::BIGINT)
+    WITH CHECK (user_id = current_setting('app.current_user_id')::BIGINT);
 
 INSERT INTO tenants (name) VALUES ('Tenant Alpha'), ('Tenant Beta');
 

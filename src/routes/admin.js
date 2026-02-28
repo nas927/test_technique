@@ -1,7 +1,7 @@
 const express = require('express');
 const auth = require('../middleware/auth')
 const { isAdmin } = require("../utils/db_utils")
-const pool = require('../db');
+const pool = require('../database/db');
 
 const router = express.Router();
 
@@ -25,5 +25,5 @@ router.get('/stats', auth, async (req, res) => {
     invoices: result.rows
   });
 });
-
+ 
 module.exports = router;

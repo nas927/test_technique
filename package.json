@@ -4,7 +4,7 @@
   "description": "API REST Lynoria",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon --watch utils --watch routes --watch middleware --watch config server.js"
+    "start": "nodemon --watch src server.js"
   },
   "dependencies": {
     "axios": "^1.13.5",
@@ -17,6 +17,7 @@
     "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
     "helmet": "^8.1.0",
+    "http-cookie-agent": "^7.0.3",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.11.3"

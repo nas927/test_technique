@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('../database/db');
 
 const fetchUser = async (name, value) => {
    const query = {
@@ -9,7 +9,7 @@ const fetchUser = async (name, value) => {
 
    const result = await db.query(query);
 
-   if (!result) 
+   if (!result || result.rows.length < 1) 
       return null;
    return result.rows[0];
 }
@@ -18,14 +18,14 @@ const fetchInvoicesFromUser = async (name, value) => {
    const query = {
      name: 'fetch-invoices',
      text: `SELECT * FROM invoices WHERE ${name} = $1`,
-     values: [value]
+     values: [3]
    }
 
    const result = await db.query(query);
 
-   if (!result) 
+   if (!result || result.rows.length < 1) 
       return null;
-   return result.rows[0];
+   return result.rows;
 }
 
 const isAdmin = async (name, value, role_id) => {
@@ -39,7 +39,7 @@ const isAdmin = async (name, value, role_id) => {
 
    console.log(result.rows[0])
 
-   if (!result) 
+   if (!result || result.rows.length < 1) 
       return false;
    if (result.rows[0].role_id === 1)
       return true;

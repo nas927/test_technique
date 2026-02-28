@@ -27,18 +27,11 @@
 
 # Protection CSRF
 
-- Mise en place de token CSRF pour l'nevoie de données post
+- Mise en place de token CSRF pour l'envoie de données post
 
 # Protection Cookie
 
 - Pour éviter de se faire voler le cookie utilisateur par un tier mettre le cookie en secure, strict, httponly
-
-# Upload
-
-- Vérification de taille de fichier
-- Vérification d'extension
-- Ne pas avoir de nom prédictible
-- Bloquer ce dossier sur l'hébergeur
 
 # Protection Header
 
@@ -52,6 +45,22 @@
 	default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests
     permet de charger des fichier provenant seulement de ce site
 
+# Protection bruteforce
+
+- Utilisation de HMAC + sha384 pour signer
+- Eviter d'utiliser des url évidents pour les endpoints admin pour éviter de les trouver
+
+# Upload
+
+- Vérification de taille de fichier
+- Vérification d'extension
+- Ne pas avoir de nom prédictible
+
+Testes (bash ou batch pas de powershell):
+```sh
+curl -X POST https://localhost:3000/upload/img -H "Authorization: Bearer cookie_token" -F "file=@C:\path_to_file.png" -k
+```
+
 # JWT token
 
 - Generation d'un mot de passe fort 256 bit (32 bytes) transformé en base64
@@ -59,6 +68,7 @@
 openssl rand -base64 32
 ```
 - Rectification de la fonction verify ajouté un algorithme HS384 pour ne pas falsifier la signature avec None et passer des données admins
+- Ajouter un refresh token pour ne pas utiliser l'original qu'on utilise que en interne
 
 # Package Ajouté
 
@@ -79,8 +89,21 @@ openssl rand -base64 32
 - Sécuriser le firewall mettre des règles spécifique pour accepter les ip seulement sur le port 443 
 - Mettre en place la redirection https éviter les attaques de type mitm
 - N'accepter que les connexion http 2 ou 3 pour éviter le smuggling
+- Bloquer des fichiers/dossier qui peuvent contenir des informations sensible par exemple dossier upload
+
+# Testes
+
+Tous les testes sont dans index décommentez la première fonction pour se connecter ensuite commenter le et décommentez les autres api pour afficher
 
 # Note
 
 Passage en https grosse perte de temps sur les csrf à cause des cookies j'ai passé des heures à debugger le problème venait de la session qui n'est pas store.
-Pareil pour le rate limiting il faut un stockage pour l'ip et le nombre de tentative
+Pareil pour le rate limiting il faut un stockage pour l'ip et le nombre de tentative.
+
+J'ai réglé le problème de csrf en faisant transiter la session dans la requête
+
+Génerer certificat
+```sh
+openssl genrsa -out key.pem 2048
+openssl req -new -x509 -key selfsigned.pem -out selfsigned.crt -days 365 -nodes 
+```

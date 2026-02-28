@@ -1,8 +1,10 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const { hashPassword } = require('../utils/secure_pass')
 const fs = require('fs');
 const auth = require('../middleware/auth');
+const dotenv = require('dotenv');
 
 const router = express.Router();
 
@@ -15,7 +17,6 @@ if (!fs.existsSync(uploadDir)) {
 const ALLOWED_MIME_TYPES = [
   'image/jpeg',
   'image/png',
-  'application/pdf'
 ];
 
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
@@ -35,8 +36,10 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
 
-  filename: (req, file, cb) => {
-    const randomName = Math.floor(Math.random(1545654) + Math.random(1111111112255)).toString();
+  filename: async (req, file, cb) => {
+    const max = 9999999999999;
+    const min = 100000000;
+    const randomName = btoa(await hashPassword(Math.round(Math.random() * (max - min) + min).toString() + process.env.SEED_UPLOAD));
     const ext = path.extname(file.originalname).toLowerCase();
 
     cb(null, `${randomName}${ext}`);
@@ -51,9 +54,8 @@ const upload = multer({
   }
 });
 
-router.post('/upload', upload.single('file'), (req, res) => {
-  console.log("test");
-  if (!req.file) 
+router.post('/img', auth, upload.single('file'), (req, res) => {
+  if (!req.file)
     return res.status(400).json({ error: 'Fichier pas valid uploadé' });
 
   res.json({

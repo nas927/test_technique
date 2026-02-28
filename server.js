@@ -1,5 +1,5 @@
 const express = require('express');
-const { limiter } = require('./utils/secure_rate');
+const { limiter } = require('./src/utils/secure_rate');
 const https = require('https');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -8,12 +8,12 @@ const helmet = require('helmet');
 const dotenv = require('dotenv');
 const fs = require('fs');
 dotenv.config();
-const indexRoutes = require('./routes/index');
-const authRoutes = require('./routes/auth');
-const usersRoutes = require('./routes/users');
-const invoicesRoutes = require('./routes/invoices');
-const adminRoutes = require('./routes/admin');
-const uploadRoutes = require('./routes/upload');
+const indexRoutes = require('./src/routes/index');
+const authRoutes = require('./src/routes/auth');
+const usersRoutes = require('./src/routes/users');
+const invoicesRoutes = require('./src/routes/invoices');
+const adminRoutes = require('./src/routes/admin');
+const uploadRoutes = require('./src/routes/upload');
 
 const app = express();
 
@@ -24,6 +24,7 @@ app.use(function (request, response, next) {
 });
 
 const corsOptions = {
+    origin: "https://locahost:3000",
     credentials: true,
     methods: ['GET', 'POST']
 };
@@ -36,7 +37,16 @@ app.use(cookieParser());
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,
+  cookie: () => {
+    return {
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 60000
+    }
+  }
 }));
 
 app.use('/', indexRoutes);
@@ -50,6 +60,6 @@ https.createServer({
   key: fs.readFileSync('selfSigned.key'),
   cert: fs.readFileSync('selfSigned.crt')
   }, app)
-  .listen(3000, () => {
-  console.log('Lynoria API running on port 3000 with HTTPS');
+  .listen(3000, '0.0.0.0', () => {
+  console.log('Lynoria API running 0.0.0.0 on port 3000 with HTTPS');
 });
