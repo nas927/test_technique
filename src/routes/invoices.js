@@ -1,7 +1,6 @@
 const express = require('express');
-const pool = require('../database/db');
 const auth = require('../middleware/auth');
-const { fetchInvoicesFromUser } = require('../utils/db_utils');
+const { fetchToBdd, RLS } = require('../utils/db_utils');
 
 const router = express.Router();
 
@@ -14,8 +13,17 @@ router.get('/:id', auth, async (req, res) => {
       res.status(201).json({ error: "Non autorisé !"});
       return;
    }
-   const result = await fetchInvoicesFromUser("user_id", req.user.id);
-   res.json(result);
+   await RLS(NaN, req.user.tenant_id, req.user.id, "");
+   try {
+      const result = await fetchToBdd("invoices", "user_id", req.user.id);
+      if (!result)
+         res.json({ error: "Veuillez retenter !"});
+      res.json(result)
+   }
+   catch (err) {
+      console.log(err)
+      res.json({error: "Une erreur est survenue !"})
+   }
 });
 
 module.exports = router;

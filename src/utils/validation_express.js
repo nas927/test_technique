@@ -6,7 +6,6 @@ const validate = validations => {
         return res.status(400).json({ errors: result.array() });
       }
     }
-
     next();
   };
 };

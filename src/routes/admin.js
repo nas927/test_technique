@@ -1,29 +1,38 @@
 const express = require('express');
 const auth = require('../middleware/auth')
-const { isAdmin } = require("../utils/db_utils")
-const pool = require('../database/db');
+const { isAdmin, RLS } = require("../utils/db_utils")
+const db = require('../database/db');
 
 const router = express.Router();
 
 router.get('/stats', auth, async (req, res) => {
-  if (!(await isAdmin("id", req.user.id, req.user.role)))
+  if (!(await isAdmin("id", req.user.id, req.user.tenant_id)))
   {
-    res.status(500).json({ error: "Non admin !" })
+    res.status(500).json({ error: "Une erreur est survenue !" })
     return;
   }
-  const query = {
-  // give the query a unique name
-    name: 'fetch-for-admins',
-    text: 'SELECT * FROM invoices',
-  }
-  const result = await pool.query(query);
-  const total = result.rows.reduce((sum, inv) => sum + inv.amount, 0);
 
-  res.json({
-    totalInvoices: result.rows.length,
-    totalAmount: total,
-    invoices: result.rows
-  });
+  await RLS(NaN, NaN, NaN, "bypassrls");
+  try {
+      const query = {
+        name: 'fetch-for-invoices-from-admin',
+        text: 'SELECT * FROM invoices',
+      }
+      const result = await db.query(query);
+      console.log(result)
+      const total = result.rows.reduce((sum, inv) => sum + inv.amount, 0);
+    
+      res.json({
+        totalInvoices: result.rows.length,
+        totalAmount: total,
+        invoices: result.rows
+      });
+  }
+  catch (err)
+  {
+    console.log(err);
+    return;
+  }
 });
  
 module.exports = router;

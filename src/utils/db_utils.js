@@ -1,53 +1,66 @@
 const db = require('../database/db');
 
-const fetchUser = async (name, value) => {
+const fetchToBdd = async (table, name, value) => {
    const query = {
      name: 'fetch-user',
-     text: `SELECT * FROM users WHERE ${name} = $1`,
+     text: `SELECT * FROM ${table} WHERE ${name} = $1`,
      values: [value]
    }
 
-   const result = await db.query(query);
-
-   if (!result || result.rows.length < 1) 
-      return null;
-   return result.rows[0];
+   try {
+      const result = await db.query(query);
+      if (!result || result.rows.length < 1) 
+         return;
+      return result.rows[0];
+   }
+   catch (err)
+   {
+      return;
+   }
 }
 
-const fetchInvoicesFromUser = async (name, value) => {
-   const query = {
-     name: 'fetch-invoices',
-     text: `SELECT * FROM invoices WHERE ${name} = $1`,
-     values: [3]
-   }
-
-   const result = await db.query(query);
-
-   if (!result || result.rows.length < 1) 
-      return null;
-   return result.rows;
-}
-
-const isAdmin = async (name, value, role_id) => {
-   const query = {
-     name: 'fetch-invoices',
-     text: `SELECT role_id FROM users WHERE ${name} = $1`,
-     values: [value]
-   }
-
-   const result = await db.query(query);
-
-   console.log(result.rows[0])
-
-   if (!result || result.rows.length < 1) 
-      return false;
-   if (result.rows[0].role_id === 1)
+const RLS = async (userId, tenantId, invoicesUserId, role) => {
+   try {
+      if (role !== "")
+         await db.query('SET ROLE = ' + role);
+      if (!isNaN(tenantId))
+         await db.query('SET app.tenant_id = ' + tenantId);
+      if (!isNaN(invoicesUserId))
+         await db.query('SET app.user_id = ' + invoicesUserId);
+      if (!isNaN(userId))
+         await db.query('SET app.id = ' + userId);
       return true;
-   return false;
+   }
+   catch (err)
+   {
+      console.log(err);
+      return;
+   }
+}
+
+const isAdmin = async (name, userId, tenantId) => {
+   await RLS(userId, tenantId, userId, "");
+   const query = {
+     name: 'is-admin',
+     text: `SELECT role_id FROM users WHERE ${name} = $1`,
+     values: [userId]
+   }
+
+   try {
+      const result = await db.query(query);
+      if (!result || result.rows.length < 1) 
+         return;
+      if (result.rows[0].role_id === 1)
+         return true;
+      return;
+   } catch (err) {
+      return;
+   }
+
 }
 
 module.exports = {
-    fetchUser,
-    fetchInvoicesFromUser,
-    isAdmin
+    fetchToBdd,
+    isAdmin,
+    RLS
 }

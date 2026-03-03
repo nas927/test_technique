@@ -1,7 +1,7 @@
 const express = require('express');
 const pool = require('../database/db');
 const auth = require('../middleware/auth');
-const { fetchUser } = require('../utils/db_utils');
+const { fetchToBdd, RLS } = require('../utils/db_utils');
 
 const router = express.Router();
 
@@ -15,10 +15,11 @@ router.get('/:id', auth, async (req, res) => {
     return;
   }
 
-  const result = await fetchUser("id", req.user.id);
+  await RLS(req.user.id, req.user.tenant_id, NaN, "");
+  const result = await fetchToBdd("users", "id", req.user.id);
 
-  if (result === null)
-    return res.status(404).json({ error: 'User not found' });
+  if (!result)
+    return res.status(404).json({ error: 'Veuillez retenter' });
 
   res.json({user: result.id});
 });
