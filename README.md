@@ -19,6 +19,9 @@
 - Ne pas utiliser un port connu et ne pas exposer le port
 - Changer le fichier .conf pour ajouter plus de sécurité par rapport aux tentatives de connexion échoué
 
+# RLS
+- Protection RLS stricte sur tenants et users
+
 # Protection d'injection sql
 
 - Mise en place de requête préparé
@@ -96,6 +99,11 @@ openssl rand -base64 32
 # Testes
 
 Tous les testes sont dans index décommentez la première fonction pour se connecter ensuite commenter le et décommentez les autres api pour afficher
+
+- Base de donnée
+```sh
+psql -U postgres -d test -f .\init.sql -p 5332
+```
 
 # Note
 

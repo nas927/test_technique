@@ -9,25 +9,26 @@ const fetchToBdd = async (table, name, value) => {
 
    try {
       const result = await db.query(query);
-      if (!result || result.rows.length < 1) 
+      if (!result || result.rows.length < 1)
          return;
       return result.rows[0];
    }
    catch (err)
    {
+      console.log(err);
       return;
    }
 }
 
-const RLS = async (userId, tenantId, invoicesUserId, role) => {
+const RLS = async (userId, tenantId, invoicesUserId, ROLE) => {
    try {
-      if (role !== "")
-         await db.query('SET ROLE = ' + role);
-      if (!isNaN(tenantId))
+      if (ROLE !== "")
+         await db.query('SET ROLE = ' + ROLE);
+      if (!isNaN(tenantId) || typeof tenantId !== "number" )
          await db.query('SET app.tenant_id = ' + tenantId);
-      if (!isNaN(invoicesUserId))
+      if (!isNaN(invoicesUserId) || typeof invoicesUserId !== "number" )
          await db.query('SET app.user_id = ' + invoicesUserId);
-      if (!isNaN(userId))
+      if (!isNaN(userId) || typeof userId !== "number" )
          await db.query('SET app.id = ' + userId);
       return true;
    }
@@ -48,15 +49,15 @@ const isAdmin = async (name, userId, tenantId) => {
 
    try {
       const result = await db.query(query);
-      if (!result || result.rows.length < 1) 
+      if (!result || result.rows.length < 1)
          return;
       if (result.rows[0].role_id === 1)
          return true;
       return;
    } catch (err) {
+      console.log(err);
       return;
    }
-
 }
 
 module.exports = {

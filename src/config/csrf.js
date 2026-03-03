@@ -11,9 +11,6 @@ const {
 
 const { csrfSynchronisedProtection } = csrfSync({
   getTokenFromRequest: (req, res) => {
-    
-    console.log(req.session);
-    console.log(req.sessionID);
     if (req.is("application/x-www-form-urlencoded"))
       return req.body["CSRFToken"];
     req.sessionID = req.headers.sessionid;

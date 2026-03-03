@@ -29,7 +29,7 @@ const corsOptions = {
     methods: ['GET', 'POST']
 };
 
-//app.use(limiter());
+app.use(limiter());
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(helmet());

@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 
 function auth(req, res, next) {
   const authHeader = req.headers.authorization;
-  if (!authHeader) 
+  if (!authHeader)
     return res.status(401).json({ error: 'Autorisation !' });
 
   const token = authHeader.replace('Bearer ', '');
@@ -12,6 +12,7 @@ function auth(req, res, next) {
     req.user = decoded;
     next();
   } catch (err) {
+    console.log(err);
     return res.status(401).json({ error: 'token invalide vous devez sûrement vous reconnecter' });
   }
 }

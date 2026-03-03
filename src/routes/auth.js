@@ -18,30 +18,29 @@ router.post('/login', csrfSynchronisedProtection,
 
     try {
       await RLS(NaN, NaN, NaN, "bypassrls");
-      const r = await fetchToBdd('users', 'email', req.body.email);
+      const result = await fetchToBdd('users', 'email', req.body.email);
       await RLS(NaN, NaN, NaN,"utilisateur");
   
-      if (r === undefined || !verifyPassword(req.body.password, r.password_hash))
+      if (!result || !verifyPassword(req.body.password, result.password_hash))
         return res.status(401).json({ error: 'Invalid credentials' });
   
       const Accesstoken = jwt.sign(
-        { id: r.id, role: r.role_id, tenant_id: r.tenant_id },
+        { id: result.id, role: result.role_id, tenant_id: result.tenant_id },
         process.env.JWT_SECRET,
-        { algorithm: "HS384", expiresIn: '10m' }
+        { algorithm: "HS384", expiresIn: '5m' }
       );
   
       const refreshToken = jwt.sign(
-        { id: r.id, role: r.role_id, tenant_id: r.tenant_id },
+        { id: result.id, role: result.role_id, tenant_id: result.tenant_id },
         process.env.JWT_REFRESH_SECRET,
         { algorithm: "HS384", expiresIn: '1h' }
       );
-      res.json({ refreshToken, user: { id: r.id, role: r.role_id, tenant_id: parseInt(r.tenant_id) } });
+      res.json({ refreshToken, user: { id: result.id, role: result.role_id, tenant_id: result.tenant_id } });
     }
     catch (err) {
       console.log(err);
       res.json({ error: "Une erreur est survenue !" });
     }
-
 });
 
 module.exports = router;

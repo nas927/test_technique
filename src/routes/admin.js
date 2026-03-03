@@ -19,9 +19,13 @@ router.get('/stats', auth, async (req, res) => {
         text: 'SELECT * FROM invoices',
       }
       const result = await db.query(query);
-      console.log(result)
+      if (!result || result.rows.length < 1)
+      {
+        res.json({ erreur: "Une erreur est survenue !"});
+        return;
+      }
       const total = result.rows.reduce((sum, inv) => sum + inv.amount, 0);
-    
+
       res.json({
         totalInvoices: result.rows.length,
         totalAmount: total,
@@ -34,5 +38,5 @@ router.get('/stats', auth, async (req, res) => {
     return;
   }
 });
- 
+
 module.exports = router;
