@@ -6,9 +6,10 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
   const csrfToken = generateToken(req, res);
+  console.log("accessing ...");
   postRequest('auth/login', { 
-      email: 'user@alpha.com',
-      password: 'user1234'
+      email: 'admin@alpha.com',
+      password: 'admin1234'
     },
     {
       "x-csrf-token": csrfToken,
@@ -29,7 +30,7 @@ router.get('/', (req, res) => {
   //     res.status(500).json({ error: 'Internal server error' });
   //   });
 
-  // getRequest('invoices/2', req.cookies.token).then(async (data) => {
+  // getRequest('invoices/15', req.cookies.token).then(async (data) => {
   //     res.status(201).json(data.data);
   //   }).catch((error) => {
   //     console.log(error.response.data);

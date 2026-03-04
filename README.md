@@ -105,6 +105,46 @@ Tous les testes sont dans index décommentez la première fonction pour se conne
 psql -U postgres -d test -f .\init.sql -p 5332
 ```
 
+# Docker
+
+- Créez des données persistantes
+```sh
+docker volume create postgres-data
+```
+- Récupérez le lien des données monté
+```sh
+docker volume inspect postgres-data
+```
+
+- Lancez postgres
+```sh
+docker run --name postgres-db -e POSTGRES_PASSWORD=nassim92 -e POSTGRES_USER=postgres -e POSTGRES_DB=test -p 5332:5332 -v postgres-data:/var/lib/docker/volumes/postgres-data/ -d postgres
+```
+
+- Chargez le fichier
+```sh
+docker cp ./init.sql postgres-db:/tmp/init.sql
+```
+```sh
+docker exec -it postgres-db psql -U postgres -f /tmp/init.sql 
+```
+
+- Buildez docker avec le DockerFile
+```sh
+docker --debug build --tag test .
+```
+
+- Démarrez l'app
+```sh
+docker run -p 3000:3000 test
+```
+
+- Tout stoper
+```sh
+docker stop $(docker ps -a -q)
+```
+
+
 # Note
 
 Passage en https grosse perte de temps sur les csrf à cause des cookies j'ai passé des heures à debugger le problème venait de la session qui n'est pas store.

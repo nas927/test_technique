@@ -57,8 +57,8 @@ app.use('/admin', adminRoutes);
 app.use('/upload', uploadRoutes);
 
 https.createServer({
-  key: fs.readFileSync('selfSigned.key'),
-  cert: fs.readFileSync('selfSigned.crt')
+  key: fs.readFileSync('selfsigned.key'),
+  cert: fs.readFileSync('selfsigned.crt')
   }, app)
   .listen(3000, '0.0.0.0', () => {
   console.log('Lynoria API running 0.0.0.0 on port 3000 with HTTPS');

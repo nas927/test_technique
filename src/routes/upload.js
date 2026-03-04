@@ -86,7 +86,6 @@ router.post('/img', auth, upload.single('file'), async (req, res) => {
     console.log(err);
     return res.status({erreur: "Une erreur s'est produite lors de l'upload "});
   }
-
 });
 
 router.use((err, req, res, next) => {

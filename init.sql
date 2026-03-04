@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS test;
+CREATE DATABASE test;
+
 TRUNCATE TABLE invoices, users, tenants RESTART IDENTITY CASCADE;
 DROP TABLE IF EXISTS invoices, users, tenants CASCADE;
 REASSIGN OWNED BY utilisateur TO postgres;
@@ -5,7 +8,7 @@ DROP OWNED BY utilisateur;
 DROP ROLE IF EXISTs utilisateur;
 DROP ROLE IF EXISTs bypassrls;
 
-CREATE USER utilisateur PASSWORD 'nassim92';
+CREATE USER utilisateur PASSWORD 'nassim92'; -- Choisir un long mot de passe
 GRANT CONNECT ON DATABASE test TO utilisateur;
 GRANT USAGE ON SCHEMA public TO utilisateur;
 CREATE ROLE bypassrls;
